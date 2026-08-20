@@ -16,16 +16,21 @@ if [[ "${mpi}" == "openmpi" ]]; then
     # OPAL_PREFIX, set automatically by openmpi's own activation script --
     # to target the host env instead. Same fix as
     # conda-forge/libpnetcdf-feedstock.
-    COMPILER_PREFIX="${BUILD_PREFIX}/bin"
+    COMPILER_PREFIX="${BUILD_PREFIX}"
   else
-    COMPILER_PREFIX="${PREFIX}/bin"
+    COMPILER_PREFIX="${PREFIX}"
   fi
-  export CC="${COMPILER_PREFIX}/mpicc"
-  export FC="${COMPILER_PREFIX}/mpifort"
+  export CC="${COMPILER_PREFIX}/bin/mpicc"
+  export FC="${COMPILER_PREFIX}/bin/mpifort"
 else
   export MPI_LAUNCH="${PREFIX}/bin/mpirun"
   export CC=mpicc
   export FC=mpifort
+fi
+
+if [[ "$target_platform" == osx-* ]]; then
+  export LDFLAGS="-Wl,-headerpad_max_install_names -L${COMPILER_PREFIX}/lib"
+  export CPPFLAGS="-I${COMPILER_PREFIX}/include"
 fi
 
 IDXTYPE_ARGS=""

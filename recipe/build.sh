@@ -29,8 +29,7 @@ else
 fi
 
 if [[ "$target_platform" == osx-* ]]; then
-  export LDFLAGS="-Wl,-headerpad_max_install_names -L${COMPILER_PREFIX}/lib"
-  export CPPFLAGS="-I${COMPILER_PREFIX}/include"
+  export DYLD_FALLBACK_LIBRARY_PATH=$CONDA_PREFIX/lib:$DYLD_FALLBACK_LIBRARY_PATH
 fi
 
 IDXTYPE_ARGS=""

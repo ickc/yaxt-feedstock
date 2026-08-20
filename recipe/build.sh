@@ -29,7 +29,7 @@ else
 fi
 
 if [[ "$target_platform" == osx-* ]]; then
-  export DYLD_FALLBACK_LIBRARY_PATH=$CONDA_PREFIX/lib:$DYLD_FALLBACK_LIBRARY_PATH
+  export DYLD_FALLBACK_LIBRARY_PATH=${COMPILER_PREFIX}/lib:${DYLD_FALLBACK_LIBRARY_PATH}
 fi
 
 IDXTYPE_ARGS=""

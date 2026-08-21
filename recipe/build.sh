@@ -28,6 +28,21 @@ else
   export FC=mpifort
 fi
 
+if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" == "1" ]]; then
+  # ACX_FC_C_2FLD_STRUCT_RETURN is new in 0.12.x and does a link test followed
+  # by a run test.  Its cross-compilation branch reports "2-field-struct-return
+  # link-test succeeded" but then stores the answer in the wrong cache variable
+  # (acx_cv_cfortran_works instead of acx_cv_fc_c_2fld_struct_return), so the
+  # check falls through to "failed" and configure disables the Fortran
+  # interface of the bucket generator.  That drops
+  # tests/test_xmap_bucket_tiler_f.f90 from libtestutil_f_la_SOURCES while
+  # tests/test_xmap_common_f.f90 still USEs the module -- it guards that USE on
+  # HAVE_FC_ABSTRACT_INTERFACE, a different condition -- and the build dies on
+  # a missing test_xmap_bucket_tiler.mod.  Seed the cache with the answer the
+  # native builds give: both osx-64 and linux-aarch64 report a plain "yes".
+  export acx_cv_fc_c_2fld_struct_return=yes
+fi
+
 IDXTYPE_ARGS=""
 if [[ "${idxtype}" == "long" ]]; then
   IDXTYPE_ARGS="--with-idxtype=long"

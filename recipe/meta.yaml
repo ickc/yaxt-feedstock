@@ -50,6 +50,17 @@ requirements:
     # wrappers are portable shell scripts and don't need this). Same pattern
     # as conda-forge/libpnetcdf-feedstock.
     - {{ mpi }}  # [mpi == "openmpi" and build_platform != target_platform]
+    # conda-forge/ctng-compilers-feedstock#225: ctng-compiler-activation
+    # dropped the `gcc_<target>` pin from `gfortran_<target>` on osx, and
+    # `gfortran_impl_osx-*` 15.3.0 only asks for `gcc_impl_osx-* >=15.3.0`.
+    # The solver therefore pairs gfortran 15.3.0 with gcc_impl 16.1.0, which
+    # installs the C-side GCC bits (crt*.o, libgcc.a, libemutls_w.a, ...)
+    # under lib/gcc/<triplet>/16.1.0/ while gfortran 15.3.0 only looks in
+    # .../15.3.0/ -- so *every* Fortran link fails and configure aborts with
+    # "unable to link a Fortran program using libtool". Pin the C-side GCC to
+    # the Fortran compiler's own version until upstream restores the pin.
+    - gcc_impl_osx-64 {{ fortran_compiler_version }}.*     # [osx]
+    - gcc_impl_osx-arm64 {{ fortran_compiler_version }}.*  # [osx and target_platform == "osx-arm64"]
   host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
